@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdEarnings Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+        }
+
+        nav ul li a:hover, 
+        nav ul li a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+        }
+
+        .section {
+            display: none;
+            padding: 2rem 0;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title i {
+            margin-right: 0.5rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .earnings-display {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
+            color: white;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .earnings-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .earnings-limit {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #f72585, #7209b7);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        .timer-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--primary);
+        }
+
+        .countdown {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--warning);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-img {
+            height: 160px;
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .blog-content {
+            padding: 1.5rem;
+        }
+
+        .blog-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .blog-excerpt {
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .ad-container {
+            background: #f8f9fa;
+            border: 1px dashed #dee2e6;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .ad-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .ad-content {
+            height: 100px;
+            background: linear-gradient(135deg, #7209b7, #f72585);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--success);
+        }
+
+        .copyright {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin-top: 1rem;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0 0.5rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hamburger {
+                display: block;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+
+            nav {
+                width: 100%;
+                display: none;
+            }
+
+            nav.active {
+                display: block;
+            }
+
+            nav ul {
+                flex-direction: column;
+                margin-top: 1rem;
+            }
+
+            nav ul li {
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-ad"></i>
+                    <span>AdEarnings</span>
+                </div>
+                <div class="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <nav id="nav">
+                    <ul>
+                        <li><a href="#home" class="nav-link active">Home</a></li>
+                        <li><a href="#withdraw" class="nav-link">Withdraw</a></li>
+                        <li><a href="#blogs" class="nav-link">Blogs</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="earnings-display">
+                <h2>Your Earnings</h2>
+                <div class="earnings-amount">₹<span id="earnings">0.00</span></div>
+                <div class="earnings-limit">Daily Limit: ₹0.10</div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar" style="width: 0%"></div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-play-circle"></i> Ad Controls</h3>
+                <p>Start watching ads to earn money. You can earn up to ₹0.10 per day.</p>
+                
+                <div class="btn-group">
+                    <button id="startAds" class="btn btn-success">Start Ads</button>
+                    <button id="stopAds" class="btn btn-warning">Stop Ads</button>
+                    <button id="moreAds" class="btn">More Ads</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-chart-line"></i> Earnings Statistics</h3>
+                <p>Today's earnings: ₹<span id="todayEarnings">0.00</span></p>
+                <p>Total earnings: ₹<span id="totalEarnings">0.00</span></p>
+                <p>Ads watched today: <span id="adsWatched">0</span></p>
+            </div>
+
+            <div id="more-ads-timer" class="card" style="display: none;">
+                <h3 class="card-title"><i class="fas fa-clock"></i> More Ads Timer</h3>
+                <p>Please wait for the timer to complete before accessing more ads:</p>
+                <div class="timer-display" id="more-ads-timer-value">15s</div>
+            </div>
+        </section>
+
+        <!-- Withdraw Section -->
+        <section id="withdraw" class="section">
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> Withdraw Earnings</h3>
+                <p>Withdraw your earnings to your UPI ID. Minimum withdrawal amount is ₹0.10.</p>
+                <p>Before withdrawing, you must watch ads for 5 minutes.</p>
+
+                <div class="ad-container">
+                    <div class="ad-label">AD</div>
+                    <div class="ad-content">Advertisement Content</div>
+                </div>
+
+                <div class="countdown" id="withdraw-timer">05:00</div>
+                <p>Complete the ad watching session to enable withdrawal.</p>
+
+                <form id="withdraw-form">
+                    <div class="form-group">
+                        <label for="upiId">UPI ID</label>
+                        <input type="text" id="upiId" class="form-control" placeholder="yourname@upi" required>
+                    </div>
+
+                    <button type="submit" id="withdraw-btn" class="btn" disabled>Withdraw Now</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-history"></i> Withdrawal History</h3>
+                <p>No withdrawal history yet.</p>
+            </div>
+        </section>
+
+        <!-- Blogs Section -->
+        <section id="blogs" class="section">
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-blog"></i> Blog Articles</h3>
+                <p>Read our blog articles and view ads to earn more money.</p>
+            </div>
+
+            <div class="blog-grid" id="blog-container">
+                <!-- Blog cards will be generated here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <i class="fas fa-ad"></i>
+                    <span>AdEarnings</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                <div class="copyright">
+                    &copy; 2023 AdEarnings. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.getElementById('nav');
+        
+        // Earnings Elements
+        const earningsElement = document.getElementById('earnings');
+        const todayEarningsElement = document.getElementById('todayEarnings');
+        const totalEarningsElement = document.getElementById('totalEarnings');
+        const adsWatchedElement = document.getElementById('adsWatched');
+        const progressBar = document.getElementById('progress-bar');
+        
+        // Ad Control Buttons
+        const startAdsBtn = document.getElementById('startAds');
+        const stopAdsBtn = document.getElementById('stopAds');
+        const moreAdsBtn = document.getElementById('moreAds');
+        
+        // Withdraw Elements
+        const withdrawTimerElement = document.getElementById('withdraw-timer');
+        const withdrawForm = document.getElementById('withdraw-form');
+        const upiIdInput = document.getElementById('upiId');
+        const withdrawBtn = document.getElementById('withdraw-btn');
+        
+        // More Ads Timer Elements
+        const moreAdsTimerSection = document.getElementById('more-ads-timer');
+        const moreAdsTimerValue = document.getElementById('more-ads-timer-value');
+        
+        // Blog Container
+        const blogContainer = document.getElementById('blog-container');
+        
+        // State variables
+        let earnings = 0;
+        let totalEarnings = 0;
+        let adsWatched = 0;
+        let adInterval;
+        let moreAdsTimer;
+        let withdrawTimer;
+        let withdrawTimeLeft = 300; // 5 minutes in seconds
+        let isWithdrawTimerCompleted = false;
+        
+        // Blog data
+        const blogTitles = [
+            "10 Ways to Maximize Your Ad Earnings",
+            "The Future of Online Advertising",
+            "How to Create Engaging Content",
+            "Understanding Digital Marketing Trends",
+            "The Psychology of Consumer Behavior",
+            "SEO Tips for Better Visibility",
+            "Social Media Marketing Strategies",
+            "Email Marketing Best Practices",
+            "Building a Personal Brand Online",
+            "The Power of Video Content"
+        ];
+        
+        // Initialize the application
+        function init() {
+            // Load data from localStorage if available
+            loadData();
+            updateUI();
+            generateBlogCards();
+            setupEventListeners();
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1);
+                    activateSection(targetId);
+                    activateNavLink(link);
+                    
+                    // Close mobile menu if open
+                    if (nav.classList.contains('active')) {
+                        nav.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Hamburger menu for mobile
+            hamburger.addEventListener('click', () => {
+                nav.classList.toggle('active');
+            });
+            
+            // Ad control buttons
+            startAdsBtn.addEventListener('click', startAds);
+            stopAdsBtn.addEventListener('click', stopAds);
+            moreAdsBtn.addEventListener('click', startMoreAdsTimer);
+            
+            // Withdraw form
+            withdrawForm.addEventListener('submit', handleWithdraw);
+        }
+        
+        // Activate section based on ID
+        function activateSection(sectionId) {
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+        
+        // Activate navigation link
+        function activateNavLink(activeLink) {
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            activeLink.classList.add('active');
+        }
+        
+        // Start showing ads
+        function startAds() {
+            // Check if daily limit reached
+            if (earnings >= 0.10) {
+                alert("Daily limit reached! You can't earn more than ₹0.10 today.");
+                return;
+            }
+            
+            // Clear any existing interval
+            stopAds();
+            
+            // Start new interval to simulate ad earnings
+            adInterval = setInterval(() => {
+                // Increment earnings by ₹0.01 per ad
+                earnings += 0.01;
+                totalEarnings += 0.01;
+                adsWatched++;
+                
+                // Update UI
+                updateUI();
+                
+                // Check if daily limit reached
+                if (earnings >= 0.10) {
+                    earnings = 0.10;
+                    stopAds();
+                    alert("Daily limit reached! Ads stopped.");
+                }
+                
+                // Save data to localStorage
+                saveData();
+            }, 3000); // Simulate an ad every 3 seconds
+        }
+        
+        // Stop showing ads
+        function stopAds() {
+            clearInterval(adInterval);
+        }
+        
+        // Start more ads timer
+        function startMoreAdsTimer() {
+            // Show timer section
+            moreAdsTimerSection.style.display = 'block';
+            
+            let timeLeft = 15;
+            moreAdsTimerValue.textContent = `${timeLeft}s`;
+            
+            moreAdsTimer = setInterval(() => {
+                timeLeft--;
+                moreAdsTimerValue.textContent = `${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(moreAdsTimer);
+                    // Redirect to a random blog page
+                    const randomBlog = Math.floor(Math.random() * 10) + 1;
+                    activateSection('blogs');
+                    activateNavLink(document.querySelector('a[href="#blogs"]'));
+                }
+            }, 1000);
+        }
+        
+        // Handle withdraw form submission
+        function handleWithdraw(e) {
+            e.preventDefault();
+            
+            if (!isWithdrawTimerCompleted) {
+                alert("Please complete the ad watching session before withdrawing.");
+                return;
+            }
+            
+            const upiId = upiIdInput.value.trim();
+            
+            if (!validateUPIId(upiId)) {
+                alert("Please enter a valid UPI ID (e.g., name@upi)");
+                return;
+            }
+            
+            if (earnings < 0.10) {
+                alert("You need at least ₹0.10 to withdraw.");
+                return;
+            }
+            
+            // Simulate sending email to admin
+            sendWithdrawalEmail(upiId, earnings);
+            
+            // Reset earnings after withdrawal
+            earnings = 0;
+            updateUI();
+            saveData();
+            
+            alert("Withdrawal request sent to admin. You will receive your payment within 24 hours.");
+            
+            // Reset form
+            withdrawForm.reset();
+            withdrawBtn.disabled = true;
+            isWithdrawTimerCompleted = false;
+            withdrawTimeLeft = 300;
+            withdrawTimerElement.textContent = formatTime(withdrawTimeLeft);
+        }
+        
+        // Validate UPI ID
+        function validateUPIId(upiId) {
+            const upiRegex = /^[a-zA-Z0-9\.\-]{2,256}@[a-zA-Z]{2,64}$/;
+            return upiRegex.test(upiId);
+        }
+        
+        // Simulate sending email to admin
+        function sendWithdrawalEmail(upiId, amount) {
+            const email = "ankurboro236@gmail.com";
+            const subject = "Withdrawal Request";
+            const body = `User with UPI ID: ${upiId} has requested withdrawal of ₹${amount.toFixed(2)}.`;
+            
+            // In a real application, you would use a server-side API to send the email
+            console.log(`Sending email to: ${email}`);
+            console.log(`Subject: ${subject}`);
+            console.log(`Body: ${body}`);
+            
+            // Simulate API call
+            setTimeout(() => {
+                console.log("Withdrawal email sent successfully!");
+            }, 1000);
+        }
+        
+        // Start withdraw timer
+        function startWithdrawTimer() {
+            clearInterval(withdrawTimer);
+            
+            withdrawTimer = setInterval(() => {
+                withdrawTimeLeft--;
+                withdrawTimerElement.textContent = formatTime(withdrawTimeLeft);
+                
+                if (withdrawTimeLeft <= 0) {
+                    clearInterval(withdrawTimer);
+                    isWithdrawTimerCompleted = true;
+                    withdrawBtn.disabled = false;
+                    withdrawTimerElement.textContent = "Completed!";
+                }
+            }, 1000);
+        }
+        
+        // Format time in MM:SS format
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Update UI with current data
+        function updateUI() {
+            earningsElement.textContent = earnings.toFixed(2);
+            todayEarningsElement.textContent = earnings.toFixed(2);
+            totalEarningsElement.textContent = totalEarnings.toFixed(2);
+            adsWatchedElement.textContent = adsWatched;
+            
+            // Update progress bar
+            const progressPercent = (earnings / 0.10) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+        }
+        
+        // Generate blog cards
+        function generateBlogCards() {
+            blogContainer.innerHTML = '';
+            
+            blogTitles.forEach((title, index) => {
+                const blogCard = document.createElement('div');
+                blogCard.className = 'blog-card';
+                blogCard.innerHTML = `
+                    <div class="blog-img">
+                        <i class="fas fa-blog"></i>
+                    </div>
+                    <div class="blog-content">
+                        <h4 class="blog-title">${title}</h4>
+                        <p class="blog-excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore...</p>
+                        <div class="ad-container">
+                            <div class="ad-label">AD</div>
+                            <div class="ad-content">Advertisement</div>
+                        </div>
+                        <button class="btn">Read More</button>
+                    </div>
+                `;
+                
+                blogCard.querySelector('.btn').addEventListener('click', () => {
+                    // Simulate earning from reading blog
+                    if (earnings < 0.10) {
+                        earnings += 0.01;
+                        totalEarnings += 0.01;
+                        updateUI();
+                        saveData();
+                    } else {
+                        alert("Daily limit reached! You can't earn more than ₹0.10 today.");
+                    }
+                });
+                
+                blogContainer.appendChild(blogCard);
+            });
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            const data = {
+                earnings,
+                totalEarnings,
+                adsWatched
+            };
+            localStorage.setItem('adEarningsData', JSON.stringify(data));
+        }
+        
+        // Load data from localStorage
+        function loadData() {
+            const data = JSON.parse(localStorage.getItem('adEarningsData'));
+            if (data) {
+                earnings = data.earnings || 0;
+                totalEarnings = data.totalEarnings || 0;
+                adsWatched = data.adsWatched || 0;
+            }
+        }
+        
+        // Initialize the application when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Start withdraw timer when withdraw section is activated
+        document.querySelector('a[href="#withdraw"]').addEventListener('click', () => {
+            setTimeout(() => {
+                if (!isWithdrawTimerCompleted && withdrawTimeLeft === 300) {
+                    startWithdrawTimer();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
