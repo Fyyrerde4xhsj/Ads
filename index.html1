@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdEarnings - Professional Ad Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.2rem 0;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+            color: #4cc9f0;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.8rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.6rem 1rem;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+        }
+
+        nav ul li a i {
+            margin-right: 0.5rem;
+        }
+
+        nav ul li a:hover, 
+        nav ul li a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .section {
+            display: none;
+            padding: 2.5rem 0;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 1.2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-title i {
+            margin-right: 0.8rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .earnings-display {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
+            color: white;
+            border-radius: var(--border-radius);
+            margin-bottom: 2.5rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .earnings-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 1.2rem 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .earnings-limit {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #f72585, #7209b7);
+            border-radius: 20px;
+            transition: width 0.7s ease;
+            box-shadow: 0 0 10px rgba(247, 37, 133, 0.6);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9a3d, #ff6b6b);
+            box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            box-shadow: 0 4px 8px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1.2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--primary);
+            background: #f8f9fa;
+            padding: 1.2rem;
+            border-radius: var(--border-radius);
+            border: 2px dashed var(--primary);
+        }
+
+        .countdown {
+            font-size: 2.8rem;
+            font-weight: 800;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--warning);
+            background: #fff8f9;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--warning);
+            box-shadow: 0 0 15px rgba(247, 37, 133, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label i {
+            margin-right: 0.8rem;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-img {
+            height: 200px;
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blog-img::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+        }
+
+        .blog-content {
+            padding: 1.8rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+            color: var(--dark);
+        }
+
+        .blog-excerpt {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .ad-container {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: var(--border-radius);
+            padding: 1.2rem;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .ad-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ad-label i {
+            margin-right: 0.5rem;
+        }
+
+        .ad-content {
+            height: 120px;
+            background: linear-gradient(135deg, #7209b7, #f72585);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .ad-content:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(114, 9, 183, 0.3);
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .footer-links a {
+            color: #f8f9fa;
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-links a i {
+            margin-right: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--success);
+            transform: translateY(-2px);
+        }
+
+        .copyright {
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1.2rem 1.5rem;
+            background: white;
+            color: var(--dark);
+            border-radius: var(--border-radius);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.4s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification i {
+            margin-right: 0.8rem;
+            font-size: 1.4rem;
+        }
+
+        .notification.success {
+            border-left: 4px solid #2ecc71;
+        }
+
+        .notification.error {
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .notification.info {
+            border-left: 4px solid #4361ee;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin-top: 1.2rem;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0 0.5rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .earnings-amount {
+                font-size: 2.8rem;
+            }
+
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hamburger {
+                display: block;
+                position: absolute;
+                top: 1.2rem;
+                right: 1.5rem;
+            }
+
+            nav {
+                width: 100%;
+                display: none;
+                margin-top: 1.5rem;
+            }
+
+            nav.active {
+                display: block;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+
+            nav ul li {
+                margin: 0.5rem 0;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .earnings-display {
+                padding: 1.8rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification System -->
+    <div class="notification success" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-text">Operation completed successfully!</span>
+    </div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-ad"></i>
+                    <span>AdEarnings</span>
+                </div>
+                <div class="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <nav id="nav">
+                    <ul>
+                        <li><a href="#home" class="nav-link active"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#withdraw" class="nav-link"><i class="fas fa-money-bill-wave"></i> Withdraw</a></li>
+                        <li><a href="#blogs" class="nav-link"><i class="fas fa-blog"></i> Blogs</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="earnings-display">
+                <h2>Your Earnings</h2>
+                <div class="earnings-amount">₹<span id="earnings">0.00</span></div>
+                <div class="earnings-limit">Daily Limit: ₹1.10</div>
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3 class="card-title"><i class="fas fa-play-circle"></i> Ad Controls</h3>
+                    <p>Start watching ads to earn money. You can earn up to ₹1.10 per day. Once you reach the limit, ads will stop automatically.</p>
+                    
+                    <div class="btn-group">
+                        <button id="startAds" class="btn btn-success"><i class="fas fa-play"></i> Start Ads</button>
+                        <button id="stopAds" class="btn btn-warning"><i class="fas fa-stop"></i> Stop Ads</button>
+                        <button id="moreAds" class="btn btn-secondary"><i class="fas fa-plus-circle"></i> More Ads</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title"><i class="fas fa-chart-line"></i> Earnings Statistics</h3>
+                    <p><i class="fas fa-coins"></i> Today's earnings: ₹<span id="todayEarnings">0.00</span></p>
+                    <p><i class="fas fa-wallet"></i> Total earnings: ₹<span id="totalEarnings">0.00</span></p>
+                    <p><i class="fas fa-eye"></i> Ads watched today: <span id="adsWatched">0</span></p>
+                    <p><i class="fas fa-bullseye"></i> Daily goal: <span id="dailyGoal">0.00</span>/1.10 (₹)</p>
+                </div>
+            </div>
+
+            <div id="more-ads-timer" class="card" style="display: none;">
+                <h3 class="card-title"><i class="fas fa-clock"></i> More Ads Timer</h3>
+                <p>Please wait for the timer to complete before accessing more ads:</p>
+                <div class="timer-display" id="more-ads-timer-value">15s</div>
+                <p>You will be redirected to a blog page after the timer completes.</p>
+            </div>
+        </section>
+
+        <!-- Withdraw Section -->
+        <section id="withdraw" class="section">
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> Withdraw Earnings</h3>
+                <p>Withdraw your earnings to your UPI ID. Minimum withdrawal amount is ₹1.10.</p>
+                
+                <div class="form-group">
+                    <label for="withdrawAmount"><i class="fas fa-rupee-sign"></i> Withdrawal Amount</label>
+                    <input type="number" id="withdrawAmount" class="form-control" placeholder="1.10" min="1.10" max="1.10" step="0.01" required>
+                    <small>You can withdraw exactly ₹1.10 (your daily earnings)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="upiId"><i class="fas fa-money-check"></i> UPI ID</label>
+                    <input type="text" id="upiId" class="form-control" placeholder="yourname@upi" required>
+                </div>
+
+                <button type="submit" id="withdraw-btn" class="btn"><i class="fas fa-paper-plane"></i> Withdraw Now</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-history"></i> Withdrawal History</h3>
+                <p>No withdrawal history yet. Withdrawals will appear here after processing.</p>
+                <div id="withdrawal-history"></div>
+            </div>
+        </section>
+
+        <!-- Blogs Section -->
+        <section id="blogs" class="section">
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-blog"></i> Blog Articles</h3>
+                <p>Read our blog articles and view ads to earn more money. Click on any ad to earn ₹0.10.</p>
+            </div>
+
+            <div class="blog-grid" id="blog-container">
+                <!-- Blog cards will be generated here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <i class="fas fa-ad"></i>
+                    <span>AdEarnings</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-question-circle"></i> Help Center</a>
+                    <a href="#"><i class="fas fa-file-alt"></i> Terms of Service</a>
+                    <a href="#"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+                    <a href="#"><i class="fas fa-envelope"></i> Contact Us</a>
+                </div>
+                <div class="copyright">
+                    &copy; 2023 AdEarnings. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.getElementById('nav');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+        
+        // Earnings Elements
+        const earningsElement = document.getElementById('earnings');
+        const todayEarningsElement = document.getElementById('todayEarnings');
+        const totalEarningsElement = document.getElementById('totalEarnings');
+        const adsWatchedElement = document.getElementById('adsWatched');
+        const dailyGoalElement = document.getElementById('dailyGoal');
+        const progressBar = document.getElementById('progress-bar');
+        
+        // Buttons
+        const startAdsBtn = document.getElementById('startAds');
+        const stopAdsBtn = document.getElementById('stopAds');
+        const moreAdsBtn = document.getElementById('moreAds');
+        const withdrawBtn = document.getElementById('withdraw-btn');
+        
+        // Forms
+        const withdrawForm = document.getElementById('withdraw-form');
+        const withdrawAmountInput = document.getElementById('withdrawAmount');
+        const upiIdInput = document.getElementById('upiId');
+        
+        // State
+        let earnings = 0;
+        let todayEarnings = 0;
+        let totalEarnings = 0;
+        let adsWatched = 0;
+        let adInterval;
+        let dailyLimit = 1.10;
+        let adValue = 0.10;
+        
+        // Initialize the app
+        function init() {
+            loadFromStorage();
+            updateUI();
+            setupEventListeners();
+            generateBlogPosts();
+        }
+        
+        // Load data from localStorage
+        function loadFromStorage() {
+            const savedEarnings = localStorage.getItem('earnings');
+            const savedTodayEarnings = localStorage.getItem('todayEarnings');
+            const savedTotalEarnings = localStorage.getItem('totalEarnings');
+            const savedAdsWatched = localStorage.getItem('adsWatched');
+            const lastEarningsDate = localStorage.getItem('lastEarningsDate');
+            
+            // Reset daily earnings if it's a new day
+            const today = new Date().toDateString();
+            if (lastEarningsDate !== today) {
+                earnings = 0;
+                todayEarnings = 0;
+                adsWatched = 0;
+                localStorage.setItem('lastEarningsDate', today);
+            } else {
+                earnings = savedEarnings ? parseFloat(savedEarnings) : 0;
+                todayEarnings = savedTodayEarnings ? parseFloat(savedTodayEarnings) : 0;
+                totalEarnings = savedTotalEarnings ? parseFloat(savedTotalEarnings) : 0;
+                adsWatched = savedAdsWatched ? parseInt(savedAdsWatched) : 0;
+            }
+        }
+        
+        // Save data to localStorage
+        function saveToStorage() {
+            localStorage.setItem('earnings', earnings);
+            localStorage.setItem('todayEarnings', todayEarnings);
+            localStorage.setItem('totalEarnings', totalEarnings);
+            localStorage.setItem('adsWatched', adsWatched);
+        }
+        
+        // Update UI with current values
+        function updateUI() {
+            earningsElement.textContent = earnings.toFixed(2);
+            todayEarningsElement.textContent = todayEarnings.toFixed(2);
+            totalEarningsElement.textContent = totalEarnings.toFixed(2);
+            adsWatchedElement.textContent = adsWatched;
+            dailyGoalElement.textContent = todayEarnings.toFixed(2);
+            
+            // Update progress bar
+            const progressPercentage = (todayEarnings / dailyLimit) * 100;
+            progressBar.style.width = `${Math.min(progressPercentage, 100)}%`;
+            
+            // Disable buttons if daily limit reached
+            if (todayEarnings >= dailyLimit) {
+                startAdsBtn.disabled = true;
+                moreAdsBtn.disabled = true;
+                progressBar.style.background = 'linear-gradient(90deg, #2ecc71, #27ae60)';
+            }
+            
+            // Set withdrawal amount to current earnings
+            withdrawAmountInput.value = earnings.toFixed(2);
+            withdrawAmountInput.max = earnings.toFixed(2);
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1);
+                    
+                    // Update active nav link
+                    navLinks.forEach(navLink => navLink.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Show target section
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        }
+                    });
+                    
+                    // Close mobile menu if open
+                    if (nav.classList.contains('active')) {
+                        nav.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Mobile menu toggle
+            hamburger.addEventListener('click', () => {
+                nav.classList.toggle('active');
+            });
+            
+            // Start ads
+            startAdsBtn.addEventListener('click', startAds);
+            
+            // Stop ads
+            stopAdsBtn.addEventListener('click', stopAds);
+            
+            // More ads
+            moreAdsBtn.addEventListener('click', showMoreAdsTimer);
+            
+            // Withdraw
+            withdrawBtn.addEventListener('click', processWithdrawal);
+        }
+        
+        // Start showing ads
+        function startAds() {
+            if (todayEarnings >= dailyLimit) {
+                showNotification('You have reached your daily limit of ₹1.10', 'info');
+                return;
+            }
+            
+            showNotification('Ads started. Earnings will accumulate.', 'success');
+            
+            // Simulate ad watching
+            adInterval = setInterval(() => {
+                if (todayEarnings < dailyLimit) {
+                    earnings += adValue;
+                    todayEarnings += adValue;
+                    totalEarnings += adValue;
+                    adsWatched++;
+                    
+                    saveToStorage();
+                    updateUI();
+                    
+                    if (todayEarnings >= dailyLimit) {
+                        stopAds();
+                        showNotification('Daily limit reached! You earned ₹1.10 today.', 'success');
+                    }
+                }
+            }, 3000); // Simulate an ad every 3 seconds
+        }
+        
+        // Stop showing ads
+        function stopAds() {
+            if (adInterval) {
+                clearInterval(adInterval);
+                showNotification('Ads stopped', 'info');
+            }
+        }
+        
+        // Show more ads timer
+        function showMoreAdsTimer() {
+            if (todayEarnings >= dailyLimit) {
+                showNotification('You have reached your daily limit of ₹1.10', 'info');
+                return;
+            }
+            
+            const timerCard = document.getElementById('more-ads-timer');
+            const timerValue = document.getElementById('more-ads-timer-value');
+            timerCard.style.display = 'block';
+            
+            let timeLeft = 15;
+            const timer = setInterval(() => {
+                timeLeft--;
+                timerValue.textContent = `${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timerCard.style.display = 'none';
+                    
+                    // Navigate to blogs section
+                    document.querySelector('[href="#blogs"]').click();
+                    showNotification('You can now watch more ads on blog pages', 'success');
+                }
+            }, 1000);
+        }
+        
+        // Process withdrawal
+        function processWithdrawal(e) {
+            e.preventDefault();
+            
+            const amount = parseFloat(withdrawAmountInput.value);
+            const upiId = upiIdInput.value.trim();
+            
+            // Validate UPI ID
+            if (!isValidUPIId(upiId)) {
+                showNotification('Please enter a valid UPI ID (e.g., name@upi)', 'error');
+                return;
+            }
+            
+            // Validate amount
+            if (amount < 1.10) {
+                showNotification('Minimum withdrawal amount is ₹1.10', 'error');
+                return;
+            }
+            
+            if (amount > earnings) {
+                showNotification('You don\'t have enough earnings to withdraw this amount', 'error');
+                return;
+            }
+            
+            // Simulate withdrawal processing
+            showNotification(`Withdrawal request of ₹${amount.toFixed(2)} to ${upiId} processing...`, 'info');
+            
+            setTimeout(() => {
+                earnings -= amount;
+                saveToStorage();
+                updateUI();
+                
+                // Add to withdrawal history
+                const historyItem = document.createElement('div');
+                historyItem.className = 'withdrawal-item';
+                historyItem.innerHTML = `
+                    <p><strong>₹${amount.toFixed(2)}</strong> to <strong>${upiId}</strong> 
+                    <span style="color: var(--success);">Completed</span></p>
+                    <small>${new Date().toLocaleString()}</small>
+                `;
+                document.getElementById('withdrawal-history').prepend(historyItem);
+                
+                showNotification(`Withdrawal of ₹${amount.toFixed(2)} to ${upiId} successful!`, 'success');
+                
+                // Reset form
+                withdrawAmountInput.value = earnings.toFixed(2);
+                upiIdInput.value = '';
+            }, 2000);
+        }
+        
+        // Validate UPI ID
+        function isValidUPIId(upiId) {
+            const upiRegex = /^[a-zA-Z0-9.\-_]{2,49}@[a-zA-Z]{2,}$/;
+            return upiRegex.test(upiId);
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            notificationText.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Generate blog posts
+        function generateBlogPosts() {
+            const blogContainer = document.getElementById('blog-container');
+            const blogPosts = [
+                {
+                    title: 'How to Maximize Your Ad Earnings',
+                    excerpt: 'Learn the best strategies to maximize your earnings from watching ads on our platform.',
+                    icon: 'fa-chart-line'
+                },
+                {
+                    title: 'Understanding UPI Payments',
+                    excerpt: 'A complete guide to UPI payments and how to set up your account for withdrawals.',
+                    icon: 'fa-money-bill-wave'
+                },
+                {
+                    title: 'Tips for Increasing Engagement',
+                    excerpt: 'Discover how to engage more with content to unlock additional earning opportunities.',
+                    icon: 'fa-lightbulb'
+                }
+            ];
+            
+            blogPosts.forEach(post => {
+                const blogCard = document.createElement('div');
+                blogCard.className = 'blog-card';
+                blogCard.innerHTML = `
+                    <div class="blog-img">
+                        <i class="fas ${post.icon}"></i>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">${post.title}</h3>
+                        <p class="blog-excerpt">${post.excerpt}</p>
+                        <div class="ad-container">
+                            <div class="ad-label"><i class="fas fa-ad"></i> ADVERTISEMENT</div>
+                            <div class="ad-content">Watch Ad to Earn ₹0.10</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event to ad in blog card
+                const adContent = blogCard.querySelector('.ad-content');
+                adContent.addEventListener('click', () => {
+                    if (todayEarnings >= dailyLimit) {
+                        showNotification('You have reached your daily limit of ₹1.10', 'info');
+                        return;
+                    }
+                    
+                    earnings += adValue;
+                    todayEarnings += adValue;
+                    totalEarnings += adValue;
+                    adsWatched++;
+                    
+                    saveToStorage();
+                    updateUI();
+                    
+                    adContent.innerHTML = 'Ad Completed! ₹0.10 Earned';
+                    adContent.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
+                    
+                    setTimeout(() => {
+                        adContent.innerHTML = 'Watch Ad to Earn ₹0.10';
+                        adContent.style.background = 'linear-gradient(135deg, #7209b7, #f72585)';
+                    }, 2000);
+                });
+                
+                blogContainer.appendChild(blogCard);
+            });
+        }
+        
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
