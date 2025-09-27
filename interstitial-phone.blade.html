@@ -1,0 +1,209 @@
+@extends('mobile.layout')
+
+@section('title', 'Redirecting...')
+
+@section('content')
+<div class="interstitial-ad phone-ad">
+    <!-- Header -->
+    <div class="ad-header">
+        <div class="ad-label">Advertisement</div>
+        <div class="countdown-timer">
+            <span id="countdown">5</span>s
+        </div>
+    </div>
+
+    <!-- Ad Content -->
+    <div class="ad-content">
+        @if($ad_content['type'] === 'android_app')
+        <div class="android-ad">
+            <img src="{{ $ad_content['image'] }}" alt="Android App" class="ad-image">
+            <h3>📱 Android App Available</h3>
+            <p>Download our app for better experience!</p>
+            <button class="download-btn">Download Now</button>
+        </div>
+        @elseif($ad_content['type'] === 'ios_app')
+        <div class="ios-ad">
+            <img src="{{ $ad_content['image'] }}" alt="iOS App" class="ad-image">
+            <h3>🍎 iOS App Available</h3>
+            <p>Get it on the App Store</p>
+            <button class="download-btn">Download on App Store</button>
+        </div>
+        @else
+        <div class="general-ad">
+            <img src="{{ $ad_content['image'] }}" alt="Advertisement" class="ad-image">
+            <h3>Sponsored Content</h3>
+            <p>{{ $ad_content['content'] }}</p>
+        </div>
+        @endif
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <!-- Continue Button -->
+    <form action="{{ route('process.click', $link->id) }}" method="GET" id="redirect-form">
+        <div class="action-buttons">
+            <button type="button" class="skip-btn" id="skip-btn" disabled>
+                Skip Ad (<span id="skip-countdown">5</span>s)
+            </button>
+            <button type="submit" class="continue-btn" id="continue-btn" style="display: none;">
+                Continue to Website →
+            </button>
+        </div>
+    </form>
+
+    <!-- Footer -->
+    <div class="ad-footer">
+        <p>Powered by AdLinkFly</p>
+    </div>
+</div>
+
+<style>
+.phone-ad {
+    max-width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.ad-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background: rgba(0,0,0,0.2);
+}
+
+.countdown-timer {
+    background: rgba(255,255,255,0.2);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+}
+
+.ad-content {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.ad-image {
+    max-width: 300px;
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.download-btn {
+    background: #fff;
+    color: #333;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+.progress-container {
+    padding: 0 20px;
+    margin: 20px 0;
+}
+
+.progress-bar {
+    background: rgba(255,255,255,0.3);
+    height: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: #fff;
+    height: 100%;
+    width: 0%;
+    transition: width 1s linear;
+}
+
+.action-buttons {
+    padding: 20px;
+    text-align: center;
+}
+
+.skip-btn, .continue-btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px;
+}
+
+.skip-btn {
+    background: rgba(255,255,255,0.3);
+    color: white;
+}
+
+.continue-btn {
+    background: #4CAF50;
+    color: white;
+}
+</style>
+
+<script>
+let countdown = 5;
+let skipCountdown = 5;
+
+function updateProgress() {
+    const progressFill = document.getElementById('progress-fill');
+    const percentage = ((5 - countdown) / 5) * 100;
+    progressFill.style.width = percentage + '%';
+}
+
+function startCountdown() {
+    const countdownEl = document.getElementById('countdown');
+    const skipCountdownEl = document.getElementById('skip-countdown');
+    const skipBtn = document.getElementById('skip-btn');
+    const continueBtn = document.getElementById('continue-btn');
+    
+    const timer = setInterval(() => {
+        countdown--;
+        skipCountdown--;
+        
+        countdownEl.textContent = countdown;
+        skipCountdownEl.textContent = skipCountdown;
+        updateProgress();
+        
+        if (countdown <= 0) {
+            clearInterval(timer);
+            skipBtn.style.display = 'none';
+            continueBtn.style.display = 'block';
+            // Auto-submit after 2 more seconds
+            setTimeout(() => {
+                document.getElementById('redirect-form').submit();
+            }, 2000);
+        }
+        
+        if (skipCountdown <= 0) {
+            skipBtn.disabled = false;
+            skipBtn.textContent = 'Skip Ad';
+            skipBtn.onclick = () => document.getElementById('redirect-form').submit();
+        }
+    }, 1000);
+}
+
+// Start countdown when page loads
+document.addEventListener('DOMContentLoaded', startCountdown);
+
+// Prevent back button
+history.pushState(null, null, location.href);
+window.onpopstate = function() {
+    history.go(1);
+};
+</script>
+@endsection
