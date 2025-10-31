@@ -52,6 +52,13 @@
   usersSnapshot.forEach(doc => {
     const user = doc.data();
     const tr = document.createElement("tr");
+   {
+  "name": "Test User",
+  "email": "test@example.com",
+  "balance": 1000,
+  "blocked": false
+}
+    
     tr.innerHTML = `
       <td>${user.name || "N/A"}</td>
       <td>${user.email || "N/A"}</td>
@@ -83,6 +90,13 @@
   withdrawalsSnapshot.forEach(doc => {
     const wd = doc.data();
     const tr = document.createElement("tr");
+   {
+  "username": "Test User",
+  "amount": 500,
+  "method": "UPI",
+  "status": "Pending"
+}
+
     tr.innerHTML = `
       <td>${wd.username || "N/A"}</td>
       <td>${wd.amount || 0}</td>
