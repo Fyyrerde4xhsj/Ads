@@ -46,24 +46,25 @@
   }
 
   async function loadUsers() {
-    const tbody = document.querySelector("#users-table tbody");
-    tbody.innerHTML = "";
-    const usersSnapshot = await getDocs(collection(db, "users"));
-    usersSnapshot.forEach(docSnap => {
-      const user = docSnap.data();
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${user.name}</td>
-        <td>${user.email}</td>
-        <td>${user.balance}</td>
-        <td>${user.blocked ? "Blocked" : "Active"}</td>
-        <td>
-          <button onclick="toggleBlockUser('${docSnap.id}')">${user.blocked ? "Unblock" : "Block"}</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+  const usersSnapshot = await getDocs(collection(db, "users"));
+  const tbody = document.querySelector("#users-table tbody");
+  tbody.innerHTML = "";
+  usersSnapshot.forEach(doc => {
+    const user = doc.data();
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${user.name || "N/A"}</td>
+      <td>${user.email || "N/A"}</td>
+      <td>${user.balance !== undefined ? user.balance : 0}</td>
+      <td>${user.isBlocked ? "Blocked" : "Active"}</td>
+      <td>
+        <button onclick="toggleBlockUser('${doc.id}')">${user.isBlocked ? "Unblock" : "Block"}</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
 
   async function toggleBlockUser(userId) {
     const userRef = doc(db, "users", userId);
@@ -76,29 +77,28 @@
   }
 
   async function loadWithdrawals() {
-    const tbody = document.querySelector("#withdrawals-table tbody");
-    tbody.innerHTML = "";
-    const withdrawalsSnapshot = await getDocs(collection(db, "withdrawals"));
-    for(const docSnap of withdrawalsSnapshot.docs) {
-      const wd = docSnap.data();
-      const userRef = doc(db, "users", wd.userId);
-      const userSnap = await getDoc(userRef);
-      const userName = userSnap.exists() ? userSnap.data().name : "Unknown";
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${userName}</td>
-        <td>${wd.amount}</td>
-        <td>${wd.method}</td>
-        <td>${wd.status}</td>
-        <td>
-          ${wd.status === "Pending" ? `
-          <button onclick="approveWithdrawal('${docSnap.id}')">Approve</button>
-          <button onclick="rejectWithdrawal('${docSnap.id}')">Reject</button>` : ""}
-        </td>
-      `;
-      tbody.appendChild(tr);
-    }
-  }
+  const withdrawalsSnapshot = await getDocs(collection(db, "withdrawals"));
+  const tbody = document.querySelector("#withdrawals-table tbody");
+  tbody.innerHTML = "";
+  withdrawalsSnapshot.forEach(doc => {
+    const wd = doc.data();
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${wd.username || "N/A"}</td>
+      <td>${wd.amount || 0}</td>
+      <td>${wd.method || "N/A"}</td>
+      <td>${wd.status || "Pending"}</td>
+      <td>
+        ${wd.status === "Pending" ? `
+        <button onclick="approveWithdrawal('${doc.id}')">Approve</button>
+        <button onclick="rejectWithdrawal('${doc.id}')">Reject</button>
+        ` : ""}
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
 
   async function approveWithdrawal(wdId) {
     const wdRef = doc(db, "withdrawals", wdId);
