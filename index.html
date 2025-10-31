@@ -45,32 +45,33 @@
     document.getElementById("total-withdrawals").textContent = withdrawalsSnapshot.size;
   }
 
-  async function loadUsers() {
-  const usersSnapshot = await getDocs(collection(db, "users"));
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const db = getFirestore(app);
+
+async function loadUsers() {
   const tbody = document.querySelector("#users-table tbody");
   tbody.innerHTML = "";
-  usersSnapshot.forEach(doc => {
-    const user = doc.data();
-    const tr = document.createElement("tr");
-   {
-  "name": "Test User",
-  "email": "test@example.com",
-  "balance": 1000,
-  "blocked": false
+  try {
+    const usersSnapshot = await getDocs(collection(db, "users"));
+    usersSnapshot.forEach(doc => {
+      const user = doc.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${user.name ? user.name : "N/A"}</td>
+        <td>${user.email ? user.email : "N/A"}</td>
+        <td>${user.balance !== undefined ? user.balance : 0}</td>
+        <td>${user.blocked ? "Blocked" : "Active"}</td>
+        <td>
+          <button onclick="toggleBlockUser('${doc.id}')">${user.blocked ? "Unblock" : "Block"}</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (error) {
+    tbody.innerHTML = `<tr><td colspan='5'>Error loading users: ${error.message}</td></tr>`;
+  }
 }
-    
-    tr.innerHTML = `
-      <td>${user.name || "N/A"}</td>
-      <td>${user.email || "N/A"}</td>
-      <td>${user.balance !== undefined ? user.balance : 0}</td>
-      <td>${user.isBlocked ? "Blocked" : "Active"}</td>
-      <td>
-        <button onclick="toggleBlockUser('${doc.id}')">${user.isBlocked ? "Unblock" : "Block"}</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
+
 
 
   async function toggleBlockUser(userId) {
@@ -84,34 +85,32 @@
   }
 
   async function loadWithdrawals() {
-  const withdrawalsSnapshot = await getDocs(collection(db, "withdrawals"));
   const tbody = document.querySelector("#withdrawals-table tbody");
   tbody.innerHTML = "";
-  withdrawalsSnapshot.forEach(doc => {
-    const wd = doc.data();
-    const tr = document.createElement("tr");
-   {
-  "username": "Test User",
-  "amount": 500,
-  "method": "UPI",
-  "status": "Pending"
+  try {
+    const withdrawalsSnapshot = await getDocs(collection(db, "withdrawals"));
+    withdrawalsSnapshot.forEach(doc => {
+      const wd = doc.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${wd.username ? wd.username : "N/A"}</td>
+        <td>${wd.amount !== undefined ? wd.amount : 0}</td>
+        <td>${wd.method ? wd.method : "N/A"}</td>
+        <td>${wd.status ? wd.status : "Pending"}</td>
+        <td>
+          ${wd.status === "Pending" ? `
+          <button onclick="approveWithdrawal('${doc.id}')">Approve</button>
+          <button onclick="rejectWithdrawal('${doc.id}')">Reject</button>
+          ` : ""}
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (error) {
+    tbody.innerHTML = `<tr><td colspan='5'>Error loading withdrawals: ${error.message}</td></tr>`;
+  }
 }
 
-    tr.innerHTML = `
-      <td>${wd.username || "N/A"}</td>
-      <td>${wd.amount || 0}</td>
-      <td>${wd.method || "N/A"}</td>
-      <td>${wd.status || "Pending"}</td>
-      <td>
-        ${wd.status === "Pending" ? `
-        <button onclick="approveWithdrawal('${doc.id}')">Approve</button>
-        <button onclick="rejectWithdrawal('${doc.id}')">Reject</button>
-        ` : ""}
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
 function addNewVisitTask() {
   const container = document.getElementById('visitTasksContainer');
   const div = document.createElement('div');
