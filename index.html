@@ -98,7 +98,25 @@
     tbody.appendChild(tr);
   });
 }
+function addNewVisitTask() {
+  const container = document.getElementById('visitTasksContainer');
+  const div = document.createElement('div');
+  div.className = "task-row";
+  div.innerHTML = `
+    <input type="text" placeholder="Link Task" />
+    <input type="text" placeholder="URL" />
+    <input type="number" placeholder="Reward" />
+    <input type="number" placeholder="Timer" />
+    <button onclick="removeTaskRow(this)">Remove</button>
+  `;
+  container.appendChild(div);
+}
+function removeTaskRow(btn) {
+  btn.parentNode.remove();
+}
 
+<button onclick="addNewVisitTask()">+ Add New</button>
+<div id="visitTasksContainer"></div>
 
   async function approveWithdrawal(wdId) {
     const wdRef = doc(db, "withdrawals", wdId);
