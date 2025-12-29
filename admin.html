@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ET Admin Panel</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
+    <style>
+        :root { --sidebar: #111827; --bg: #0f172a; --accent: #0ea5e9; --border: #334155; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; display: flex; margin: 0; height: 100vh; overflow: hidden; }
+        
+        #sidebar { width: 250px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .nav-item { padding: 15px 20px; cursor: pointer; color: #94a3b8; border-left: 4px solid transparent; transition: 0.3s; }
+        .nav-item.active { background: #1e293b; color: var(--accent); border-left-color: var(--accent); }
+        .nav-item:hover { background: #1e293b; }
+
+        main { flex: 1; padding: 30px; overflow-y: auto; }
+        .card { background: #1e293b; padding: 25px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        
+        input, select, button { width: 100%; padding: 10px; margin-top: 8px; border-radius: 6px; border: 1px solid var(--border); background: #0f172a; color: white; outline: none; }
+        button { background: var(--accent); border: none; font-weight: bold; cursor: pointer; color: #0f172a; margin-top: 15px; }
+        button:hover { opacity: 0.9; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        th { color: #94a3b8; font-weight: normal; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <nav id="sidebar">
+        <h3 style="padding: 20px; color: var(--accent); letter-spacing: 1px;">EMOJI ADMIN</h3>
+        <div class="nav-item active" onclick="switchTab('dash', this)">📊 Statistics</div>
+        <div class="nav-item" onclick="switchTab('tasks', this)">📋 Task Manager</div>
+        <div class="nav-item" onclick="switchTab('monetag', this)">📢 Monetag Ads</div>
+        <div class="nav-item" onclick="switchTab('payouts', this)">💰 Payouts</div>
+        <div class="nav-item" onclick="switchTab('settings', this)">⚙️ Settings</div>
+    </nav>
+
+    <main>
+        <!-- DASHBOARD -->
+        <section id="tab-dash">
+            <h1>Overview</h1>
+            <div class="grid">
+                <div class="card">Users<h2 id="s-users">0</h2></div>
+                <div class="card">Points Circulation<h2 id="s-points">0</h2></div>
+                <div class="card">Pending Requests<h2 id="s-payouts">0</h2></div>
+            </div>
+        </section>
+
+        <!-- TASKS -->
+        <section id="tab-tasks" class="hidden">
+            <h1>Task Management</h1>
+            <div class="card" style="max-width: 600px;">
+                <label>Task Title</label><input type="text" id="t-title">
+                <label>Step 1 Link (Ad/Shortlink)</label><input type="text" id="t-link1">
+                <label>Destination Type</label><select id="t-type"><option>Article</option><option>Video</option><option>App</option></select>
+                <label>Step 2 Link (Destination)</label><input type="text" id="t-link2">
+                <label>Reward Points</label><input type="number" id="t-reward">
+                <button onclick="addTask()">Add Task</button>
+            </div>
+            <div id="admin-task-list"></div>
+        </section>
+
+        <!-- MONETAG -->
+        <section id="tab-monetag" class="hidden">
+            <h1>Monetag Integration</h1>
+            <div class="card" style="max-width: 500px;">
+                <label>Zone ID</label><input type="text" id="m-zone" placeholder="1234567">
+                <label>Status</label>
+                <select id="m-status">
+                    <option value="true">Enabled</option>
+                    <option value="false">Disabled</option>
+                </select>
+                <button onclick="saveMonetag()">Save Config</button>
+            </div>
+        </section>
+
+        <!-- PAYOUTS -->
+        <section id="tab-payouts" class="hidden">
+            <h1>Pending Payouts</h1>
+            <div class="card">
+                <table>
+                    <thead><tr><th>UID</th><th>Method</th><th>Address</th><th>Amount</th><th>Action</th></tr></thead>
+                    <tbody id="pay-list"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section id="tab-settings" class="hidden">
+            <h1>Global Settings</h1>
+            <div class="card" style="max-width: 500px;">
+                <label>Task Wait Timer (Seconds)</label>
+                <input type="number" id="c-wait">
+                
+                <label>Coin Value (Points = $1)</label>
+                <input type="number" id="c-val">
+                
+                <label>Referral Reward (Points)</label>
+                <input type="number" id="c-ref">
+
+                <label>Show Ad after X clicks</label>
+                <input type="number" id="c-ad">
+                
+                <button onclick="saveSettings()">Update Settings</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 1. CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyh1954PFWziwV-DsLsIL9RlYYK2AmmZY",
+            authDomain: "tapme-7b658.firebaseapp.com",
+            databaseURL: "https://tapme-7b658-default-rtdb.firebaseio.com",
+            projectId: "tapme-7b658",
+            storageBucket: "tapme-7b658.firebasestorage.app",
+            messagingSenderId: "835907097562",
+            appId: "1:835907097562:web:5d9a02911c119488f6a6e3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 2. DASHBOARD STATS
+        db.ref('users').on('value', s => {
+            const users = s.val() ? Object.values(s.val()) : [];
+            document.getElementById('s-users').innerText = users.length;
+            const pts = users.reduce((a, b) => a + (b.points || 0), 0);
+            document.getElementById('s-points').innerText = pts.toLocaleString();
+        });
+
+        db.ref('payouts').on('value', s => {
+            const payouts = s.val() ? Object.values(s.val()) : [];
+            const pending = payouts.filter(p => p.status === 'pending').length;
+            document.getElementById('s-payouts').innerText = pending;
+            renderPayouts(s); // Update table if open
+        });
+
+        // 3. SETTINGS
+        db.ref('settings').on('value', s => {
+            const v = s.val() || {};
+            document.getElementById('c-wait').value = v.waitTime || 15;
+            document.getElementById('c-val').value = v.coinValue || 10000;
+            document.getElementById('c-ref').value = v.refReward || 500;
+            document.getElementById('c-ad').value = v.adClickThreshold || 100;
+        });
+
+        function saveSettings() {
+            db.ref('settings').update({
+                waitTime: parseInt(document.getElementById('c-wait').value),
+                coinValue: parseInt(document.getElementById('c-val').value),
+                refReward: parseInt(document.getElementById('c-ref').value),
+                adClickThreshold: parseInt(document.getElementById('c-ad').value)
+            });
+            alert("Settings Saved!");
+        }
+
+        // 4. MONETAG
+        db.ref('monetag').on('value', s => {
+            const v = s.val();
+            if(v) {
+                document.getElementById('m-zone').value = v.zoneId || '';
+                document.getElementById('m-status').value = v.enabled ? "true" : "false";
+            }
+        });
+
+        function saveMonetag() {
+            db.ref('monetag').update({
+                zoneId: document.getElementById('m-zone').value,
+                enabled: document.getElementById('m-status').value === "true"
+            });
+            alert("Ads Updated");
+        }
+
+        // 5. TASKS
+        db.ref('tasks').on('value', s => {
+            const list = document.getElementById('admin-task-list');
+            list.innerHTML = "";
+            s.forEach(c => {
+                list.innerHTML += `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <b>${c.val().title}</b>
+                    <button onclick="delTask('${c.key}')" style="margin:0; width:auto; background:red; padding:5px 10px;">Delete</button>
+                </div>`;
+            });
+        });
+
+        function addTask() {
+            const title = document.getElementById('t-title').value;
+            const l1 = document.getElementById('t-link1').value;
+            const type = document.getElementById('t-type').value;
+            const l2 = document.getElementById('t-link2').value;
+            const r = document.getElementById('t-reward').value;
+
+            if(!title || !l1 || !l2 || !r) return alert("Fill all fields");
+
+            db.ref('tasks').push({
+                title: title, link1: l1, type: type, link2: l2, reward: parseInt(r)
+            });
+            alert("Task Added");
+        }
+
+        function delTask(id) { if(confirm("Delete?")) db.ref('tasks/'+id).remove(); }
+
+        // 6. PAYOUTS
+        function renderPayouts(snapshot) {
+            const list = document.getElementById('pay-list');
+            list.innerHTML = "";
+            if(!snapshot.exists()) return;
+            
+            snapshot.forEach(c => {
+                const p = c.val();
+                if(p.status === 'pending') {
+                    list.innerHTML += `<tr>
+                        <td>${p.uid}</td>
+                        <td>${p.method}</td>
+                        <td>${p.addr}</td>
+                        <td>${p.amt}</td>
+                        <td><button onclick="approve('${c.key}')" style="margin:0; background:var(--accent); color:#0d1a3a; padding:5px 10px;">Approve</button></td>
+                    </tr>`;
+                }
+            });
+        }
+
+        function approve(id) {
+            db.ref('payouts/'+id).update({ status: 'paid' });
+        }
+
+        // 7. TABS
+        function switchTab(id, el) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('tab-'+id).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            
+            if(id === 'payouts') {
+                db.ref('payouts').once('value', renderPayouts);
+            }
+        }
+    </script>
+</body>
+</html>
