@@ -1,65 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Visual Studio</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Code Builder</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="app-shell">
-        <!-- Sidebar: 30% Width -->
-        <aside class="sidebar">
-            <div class="brand">
-                <div class="logo-box">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-                </div>
-                <h1>VibeCode AI</h1>
-            </div>
 
-            <div class="chat-container" id="chatContainer">
-                <!-- Messages appear here -->
-                <div class="msg bot">Describe the UI you want to build. I'll synthesize the code and show it on the right.</div>
-            </div>
+<div class="app">
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    
+    <div class="header">⚡ AI Code Builder</div>
 
-            <div class="history-section">
-                <div class="section-label">Previous Builds</div>
-                <div class="history-grid" id="historyList"></div>
-            </div>
+    <div class="chat" id="chat"></div>
 
-            <div class="input-container">
-                <div class="input-wrapper">
-                    <textarea id="userInput" placeholder="Ask me to build anything..." rows="1"></textarea>
-                    <button id="sendBtn" class="primary-btn">
-                        <span class="btn-label">Generate</span>
-                        <div class="spinner" id="spinner"></div>
-                    </button>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Preview: 70% Width -->
-        <main class="preview-area">
-            <div class="preview-toolbar">
-                <div class="url-bar">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <div class="address">localhost:3000</div>
-                </div>
-                <div class="badge" id="renderStatus">Idle</div>
-            </div>
-            <div class="iframe-wrapper">
-                <iframe id="outputFrame" title="Preview"></iframe>
-                <div id="welcomeOverlay" class="overlay">
-                    <p>Enter a prompt to start building</p>
-                </div>
-            </div>
-        </main>
+    <div class="input-area">
+      <textarea id="prompt" placeholder="Create a modern portfolio website..."></textarea>
+      <button id="generate">Generate</button>
     </div>
-    <script src="app.js"></script>
+
+    <div class="history">
+      <h3>History</h3>
+      <ul id="historyList"></ul>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="preview-header">
+      Live Preview
+      <div id="loader" class="loader hidden"></div>
+    </div>
+    <iframe id="preview"></iframe>
+  </div>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>

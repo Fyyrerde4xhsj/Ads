@@ -1,147 +1,121 @@
+const chat = document.getElementById("chat");
+const promptInput = document.getElementById("prompt");
+const generateBtn = document.getElementById("generate");
+const preview = document.getElementById("preview");
+const historyList = document.getElementById("historyList");
+const loader = document.getElementById("loader");
+
 const APIs = [
-    { name: "OpenRouter", url: "https://openrouter.ai/api/v1/chat/completions", key: "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", type: "openai" },
-    { name: "OpenAI", url: "https://api.openai.com/v1/chat/completions", key: "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", type: "openai" },
-    { name: "Anthropic", url: "https://api.anthropic.com/v1/messages", key: "sk-or-v1-52a56f096dc2c38f9da4c2492fe7b6cd9e12b5dffff7539624299faa802cdd8ea7", type: "anthropic" },
-    { name: "Gemini", url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyCy_lE_5GXusVXNo9zyOoCTd6VeCChLUs4", type: "gemini" }
+  {
+    name: "OpenRouter",
+    url: "https://openrouter.ai/api/v1/chat/completions",
+    key: "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"
+  },
+  {
+    name: "OpenAI",
+    url: "https://api.openai.com/v1/chat/completions",
+    key: "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"
+  },
+  {
+    name: "Anthropic",
+    url: "https://api.anthropic.com/v1/messages",
+    key: "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"
+  },
+  {
+    name: "Gemini",
+    url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+    key: "AIzaSyCy_lE_5GXusVXNo9zyOoCTd6VeCChLUs4"
+  }
 ];
 
-const state = {
-    history: JSON.parse(localStorage.getItem('vibe_history') || '[]'),
-    isGenerating: false
-};
-
-const dom = {
-    userInput: document.getElementById('userInput'),
-    sendBtn: document.getElementById('sendBtn'),
-    chat: document.getElementById('chatContainer'),
-    iframe: document.getElementById('outputFrame'),
-    history: document.getElementById('historyList'),
-    spinner: document.getElementById('spinner'),
-    status: document.getElementById('renderStatus'),
-    overlay: document.getElementById('welcomeOverlay')
-};
-
-function init() {
-    renderHistory();
-    dom.sendBtn.addEventListener('click', handleGenerate);
-    dom.userInput.addEventListener('input', () => {
-        dom.userInput.style.height = 'auto';
-        dom.userInput.style.height = dom.userInput.scrollHeight + 'px';
-    });
-}
-
-async function handleGenerate() {
-    const prompt = dom.userInput.value.trim();
-    if (!prompt || state.isGenerating) return;
-
-    toggleLoading(true);
-    addMessage(prompt, 'user');
-    dom.userInput.value = '';
-    dom.userInput.style.height = 'auto';
-
-    const systemPrompt = `Return ONLY a complete, single-file HTML/CSS/JS solution for: ${prompt}. 
-    Use modern, professional design. No markdown markers, no explanations. 
-    Wrap everything in <html> tags.`;
-
-    try {
-        const promises = APIs.map(api => callSingleAPI(api, systemPrompt));
-        const results = await Promise.allSettled(promises);
-        
-        // Pick longest successful response (usually more detailed)
-        const successfulCodes = results
-            .filter(r => r.status === 'fulfilled' && r.value)
-            .map(r => r.value)
-            .sort((a, b) => b.length - a.length);
-
-        if (successfulCodes.length > 0) {
-            const finalCode = cleanCode(successfulCodes[0]);
-            renderCode(finalCode);
-            saveHistory(prompt, finalCode);
-            addMessage("UI generated successfully.", "bot");
-        } else {
-            throw new Error("No valid response from APIs");
-        }
-    } catch (err) {
-        addMessage("Failed to generate code. Please verify API keys or check CORS.", "bot");
-        console.error(err);
-    } finally {
-        toggleLoading(false);
-    }
-}
-
-async function callSingleAPI(api, prompt) {
-    const headers = { "Content-Type": "application/json" };
-    let body = {};
-
-    if (api.type === "openai") {
-        headers["Authorization"] = `Bearer ${api.key}`;
-        body = { model: "gpt-3.5-turbo", messages: [{ role: "user", content: prompt }] };
-    } else if (api.type === "anthropic") {
-        headers["x-api-key"] = api.key;
-        headers["anthropic-version"] = "2023-06-01";
-        headers["anthropic-dangerous-direct-browser-access"] = "true";
-        body = { model: "claude-3-haiku-20240307", max_tokens: 4096, messages: [{ role: "user", content: prompt }] };
-    } else if (api.type === "gemini") {
-        body = { contents: [{ parts: [{ text: prompt }] }] };
-    }
-
-    const res = await fetch(api.url, { method: "POST", headers, body: JSON.stringify(body) });
-    const data = await res.json();
-
-    if (api.type === "openai") return data.choices[0].message.content;
-    if (api.type === "anthropic") return data.content[0].text;
-    if (api.type === "gemini") return data.candidates[0].content.parts[0].text;
-}
-
-function cleanCode(code) {
-    return code.replace(/```html/gi, '').replace(/```/g, '').trim();
-}
-
-function renderCode(code) {
-    dom.overlay.style.display = 'none';
-    dom.status.textContent = 'Rendering...';
-    
-    // Using srcdoc to avoid blob URL issues
-    dom.iframe.srcdoc = code;
-    
-    dom.iframe.onload = () => {
-        dom.status.textContent = 'Live';
-    };
-}
-
 function addMessage(text, type) {
-    const div = document.createElement('div');
-    div.className = `msg ${type}`;
-    div.textContent = text;
-    dom.chat.appendChild(div);
-    dom.chat.scrollTop = dom.chat.scrollHeight;
+  const div = document.createElement("div");
+  div.className = `message ${type}`;
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-function toggleLoading(isLoading) {
-    state.isGenerating = isLoading;
-    dom.sendBtn.disabled = isLoading;
-    dom.spinner.style.display = isLoading ? 'block' : 'none';
-    document.querySelector('.btn-label').style.display = isLoading ? 'none' : 'block';
-    dom.status.textContent = isLoading ? 'Thinking...' : 'Idle';
+function buildPrompt(userPrompt) {
+  return `Return ONLY HTML with inline CSS and JS. No explanation.\n${userPrompt}`;
+}
+
+function cleanHTML(text) {
+  return text.replace(/```html|```/g, "").trim();
+}
+
+async function callAPI(api, prompt) {
+  try {
+    const res = await fetch(api.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${api.key}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+    return data?.choices?.[0]?.message?.content || "";
+  } catch {
+    return "";
+  }
+}
+
+async function generateCode(prompt) {
+  loader.classList.remove("hidden");
+
+  const results = await Promise.all(APIs.map(api => callAPI(api, prompt)));
+
+  loader.classList.add("hidden");
+
+  let best = results.sort((a, b) => b.length - a.length)[0];
+  return cleanHTML(best);
 }
 
 function saveHistory(prompt, code) {
-    const entry = { id: Date.now(), prompt, code };
-    state.history.unshift(entry);
-    if (state.history.length > 5) state.history.pop();
-    localStorage.setItem('vibe_history', JSON.stringify(state.history));
-    renderHistory();
+  const history = JSON.parse(localStorage.getItem("history") || "[]");
+  history.push({ prompt, code });
+  localStorage.setItem("history", JSON.stringify(history));
+  loadHistory();
 }
 
-function renderHistory() {
-    dom.history.innerHTML = '';
-    state.history.forEach(item => {
-        const el = document.createElement('div');
-        el.className = 'history-item';
-        el.textContent = item.prompt;
-        el.onclick = () => renderCode(item.code);
-        dom.history.appendChild(el);
-    });
+function loadHistory() {
+  historyList.innerHTML = "";
+  const history = JSON.parse(localStorage.getItem("history") || "[]");
+
+  history.forEach(item => {
+    const li = document.createElement("li");
+    li.innerText = item.prompt;
+    li.onclick = () => {
+      preview.srcdoc = item.code;
+    };
+    historyList.appendChild(li);
+  });
 }
 
-init();
+generateBtn.onclick = async () => {
+  const userPrompt = promptInput.value.trim();
+  if (!userPrompt) return;
+
+  addMessage(userPrompt, "user");
+
+  const finalPrompt = buildPrompt(userPrompt);
+
+  const code = await generateCode(finalPrompt);
+
+  if (code) {
+    addMessage("Generated successfully!", "ai");
+    preview.srcdoc = code;
+    saveHistory(userPrompt, code);
+  } else {
+    addMessage("Error generating code", "ai");
+  }
+
+  promptInput.value = "";
+};
+
+loadHistory();
