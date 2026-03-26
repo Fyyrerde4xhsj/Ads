@@ -1,37 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Builder</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Code Studio</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="sidebar">
+            <div class="top-bar">
+                <div class="logo">
+                    <span class="icon">⚡</span>
+                    <span>AI Code Studio</span>
+                </div>
+                <button id="modeToggle" class="mode-btn demo">Demo Mode</button>
+            </div>
 
-<div class="app">
+            <div class="history-panel">
+                <div class="panel-header">
+                    <span>📋 Recent</span>
+                    <button id="clearBtn" class="clear-icon">✕</button>
+                </div>
+                <div id="historyList" class="history-scroll"></div>
+            </div>
 
-  <div class="left">
-    <h2>⚡ AI Builder</h2>
+            <div class="input-panel">
+                <textarea id="promptInput" placeholder="💡 Create a portfolio, calculator, todo app, game..."></textarea>
+                <button id="generateBtn" class="generate-btn">
+                    <span class="btn-text">Generate</span>
+                    <span class="btn-icon">✨</span>
+                </button>
+            </div>
 
-    <div id="chat"></div>
+            <div id="status" class="status">Ready to create magic ✨</div>
+        </div>
 
-    <textarea id="prompt" placeholder="Create a modern landing page..."></textarea>
-    <button onclick="generate()">Generate</button>
-
-    <h3>History</h3>
-    <ul id="history"></ul>
-  </div>
-
-  <div class="right">
-    <div class="top">
-      Live Preview
-      <span id="loading" class="hidden">⏳</span>
+        <!-- Right Panel -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <h3>Live Preview</h3>
+                <button id="downloadBtn" class="download-btn">
+                    <span>💾</span> Download
+                </button>
+            </div>
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                Creating your app...
+            </div>
+            <iframe id="preview" frameborder="0"></iframe>
+        </div>
     </div>
-    <iframe id="frame"></iframe>
-  </div>
-
-</div>
-
-<script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
