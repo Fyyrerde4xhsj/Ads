@@ -3,55 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Code Studio</title>
+    <title>AI Visual Studio</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar / Control Panel -->
-        <aside class="control-panel">
-            <header class="panel-header">
-                <div class="logo">
-                    <div class="logo-icon"></div>
-                    <span>AI Code Studio</span>
+    <div class="app-shell">
+        <!-- Sidebar: 30% Width -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
                 </div>
-            </header>
+                <h1>VibeCode AI</h1>
+            </div>
 
-            <div class="chat-display" id="chatDisplay">
-                <div class="message system">
-                    Welcome! Describe the website or component you want to build, and I'll generate the live preview.
-                </div>
+            <div class="chat-container" id="chatContainer">
+                <!-- Messages appear here -->
+                <div class="msg bot">Describe the UI you want to build. I'll synthesize the code and show it on the right.</div>
             </div>
 
             <div class="history-section">
-                <h3>Recent Builds</h3>
-                <div class="history-list" id="historyList"></div>
+                <div class="section-label">Previous Builds</div>
+                <div class="history-grid" id="historyList"></div>
             </div>
 
-            <div class="input-area">
+            <div class="input-container">
                 <div class="input-wrapper">
-                    <textarea id="promptInput" placeholder="e.g. Create a landing page for a coffee shop with a dark theme..."></textarea>
-                    <button id="generateBtn" class="generate-btn">
-                        <span class="btn-text">Generate</span>
-                        <div class="loader" id="loader"></div>
+                    <textarea id="userInput" placeholder="Ask me to build anything..." rows="1"></textarea>
+                    <button id="sendBtn" class="primary-btn">
+                        <span class="btn-label">Generate</span>
+                        <div class="spinner" id="spinner"></div>
                     </button>
                 </div>
             </div>
         </aside>
 
-        <!-- Preview Panel -->
-        <main class="preview-panel">
-            <div class="preview-header">
-                <div class="preview-tabs">
-                    <div class="tab active">Live Preview</div>
+        <!-- Preview: 70% Width -->
+        <main class="preview-area">
+            <div class="preview-toolbar">
+                <div class="url-bar">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <div class="address">localhost:3000</div>
                 </div>
-                <div class="status-indicator" id="statusIndicator">Ready</div>
+                <div class="badge" id="renderStatus">Idle</div>
             </div>
-            <div class="iframe-container">
-                <iframe id="previewIframe" sandbox="allow-scripts allow-modals allow-forms"></iframe>
+            <div class="iframe-wrapper">
+                <iframe id="outputFrame" title="Preview"></iframe>
+                <div id="welcomeOverlay" class="overlay">
+                    <p>Enter a prompt to start building</p>
+                </div>
             </div>
         </main>
     </div>
