@@ -3,231 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free PDF Tools | 27+ Professional PDF Utilities</title>
-    <!-- Libraries -->
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-
-    <style>
-        :root { --primary-red: #e5322d; --bg-light: #f8f8fa; --text-dark: #333; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-light); margin: 0; }
-        header { background: white; padding: 1rem; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .hero { text-align: center; padding: 40px 0; }
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .tool-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #eee; cursor: pointer; transition: 0.2s; text-align: center; position: relative;}
-        .tool-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: var(--primary-red); }
-        .tool-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
-        .badge { background: var(--primary-red); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; position: absolute; top: 10px; right: 10px; }
-        
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: white; width: 100%; max-width: 600px; border-radius: 15px; padding: 30px; position: relative; max-height: 90vh; overflow-y: auto; }
-        .close { position: absolute; top: 15px; right: 15px; font-size: 24px; cursor: pointer; }
-        .upload-box { border: 2px dashed #ccc; padding: 40px; text-align: center; border-radius: 10px; margin: 20px 0; cursor: pointer; }
-        .btn { background: var(--primary-red); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .btn:disabled { background: #ccc; }
-        #loader { display: none; text-align: center; margin: 10px 0; }
-        .options-box { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; }
-    </style>
+    <title>AI Code Studio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="app-container">
+        <!-- Sidebar / Control Panel -->
+        <aside class="control-panel">
+            <header class="panel-header">
+                <div class="logo">
+                    <div class="logo-icon"></div>
+                    <span>AI Code Studio</span>
+                </div>
+            </header>
 
-    <header>
-        <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:var(--primary-red); font-size: 1.5rem;">Free PDF Tools</strong>
-            <nav>Local Processing • 100% Private</nav>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="hero">
-            <h1>Every tool you need for PDFs</h1>
-            <p>No uploads. Everything happens in your browser.</p>
-        </div>
-
-        <div class="tools-grid" id="tools-grid"></div>
-    </div>
-
-    <div class="modal-overlay" id="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="m-title">Tool</h2>
-            <p id="m-desc"></p>
-            
-            <div class="upload-box" id="dropzone" onclick="document.getElementById('f-input').click()">
-                <p>Click or Drag PDF here</p>
-                <input type="file" id="f-input" hidden>
+            <div class="chat-display" id="chatDisplay">
+                <div class="message system">
+                    Welcome! Describe the website or component you want to build, and I'll generate the live preview.
+                </div>
             </div>
-            
-            <div id="file-info" style="margin-bottom:10px; font-size:14px; color:#666;"></div>
-            <div id="options" class="options-box" style="display:none;"></div>
-            
-            <div id="loader">Processing... Please wait.</div>
-            <button class="btn" id="go-btn" disabled>Process and Download</button>
-        </div>
+
+            <div class="history-section">
+                <h3>Recent Builds</h3>
+                <div class="history-list" id="historyList"></div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea id="promptInput" placeholder="e.g. Create a landing page for a coffee shop with a dark theme..."></textarea>
+                    <button id="generateBtn" class="generate-btn">
+                        <span class="btn-text">Generate</span>
+                        <div class="loader" id="loader"></div>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Preview Panel -->
+        <main class="preview-panel">
+            <div class="preview-header">
+                <div class="preview-tabs">
+                    <div class="tab active">Live Preview</div>
+                </div>
+                <div class="status-indicator" id="statusIndicator">Ready</div>
+            </div>
+            <div class="iframe-container">
+                <iframe id="previewIframe" sandbox="allow-scripts allow-modals allow-forms"></iframe>
+            </div>
+        </main>
     </div>
-
-    <script>
-        const { PDFDocument, degrees, rgb, StandardFonts } = PDFLib;
-        const toolsList = [
-            { id: 'merge', title: 'Merge PDF', icon: '🔗', desc: 'Combine multiple PDFs into one.', multi: true },
-            { id: 'split', title: 'Split PDF', icon: '✂️', desc: 'Extract specific pages from a PDF.', multi: false },
-            { id: 'compress', title: 'Compress', icon: '📉', desc: 'Reduce PDF file size.', multi: false },
-            { id: 'watermark', title: 'Watermark', icon: '🛡️', desc: 'Add text overlay to pages.', multi: false },
-            { id: 'rotate', title: 'Rotate', icon: '🔄', desc: 'Rotate PDF pages.', multi: false },
-            { id: 'sign', title: 'Sign PDF', icon: '🖋️', desc: 'Add a digital signature.', multi: false },
-            { id: 'protect', title: 'Protect', icon: '🔒', desc: 'Add password protection.', multi: false },
-            { id: 'unlock', title: 'Unlock', icon: '🔓', desc: 'Remove PDF passwords.', multi: false },
-            { id: 'pdf2img', title: 'PDF to JPG', icon: '🖼️', desc: 'Convert pages to images.', multi: false },
-            { id: 'img2pdf', title: 'JPG to PDF', icon: '📷', desc: 'Convert images to PDF.', multi: true },
-            { id: 'pdf2txt', title: 'PDF to Text', icon: '📄', desc: 'Extract plain text.', multi: false },
-            { id: 'word2pdf', title: 'Word to PDF', icon: '📘', desc: 'Convert .docx to PDF.', multi: false },
-            { id: 'organize', title: 'Organize', icon: '🗂️', desc: 'Rearrange PDF pages.', multi: false },
-            { id: 'remove', title: 'Remove Pages', icon: '🗑️', desc: 'Delete specific pages.', multi: false },
-            { id: 'grayscale', title: 'Grayscale', icon: '🏁', desc: 'Make PDF black and white.', multi: false },
-            { id: 'repair', title: 'Repair', icon: '🩹', desc: 'Fix corrupted PDF structures.', multi: false },
-            { id: 'resize', title: 'Resize', icon: '📏', desc: 'Change page dimensions.', multi: false },
-            { id: 'addnum', title: 'Page Numbers', icon: '🔢', desc: 'Add page numbering.', multi: false },
-            { id: 'header', title: 'Header/Footer', icon: '🔝', desc: 'Add custom headers.', multi: false },
-            { id: 'crop', title: 'Crop PDF', icon: '🖼️', desc: 'Trim page margins.', multi: false },
-            { id: 'flatten', title: 'Flatten', icon: '🥞', desc: 'Flatten form fields.', multi: false },
-            { id: 'ocr', title: 'OCR', icon: '🔍', desc: 'Make PDF searchable.', multi: false },
-            { id: 'pdf2html', title: 'PDF to HTML', icon: '🌐', desc: 'Convert to webpage format.', multi: false },
-            { id: 'excel2pdf', title: 'Excel to PDF', icon: '📊', desc: 'Convert .xlsx to PDF.', multi: false },
-            { id: 'ppt2pdf', title: 'PPT to PDF', icon: '📽️', desc: 'Convert slides to PDF.', multi: false },
-            { id: 'metadata', title: 'Metadata', icon: 'ℹ️', desc: 'Edit PDF properties.', multi: false },
-            { id: 'extractimg', title: 'Extract Images', icon: '🎞️', desc: 'Pull images out of PDF.', multi: false }
-        ];
-
-        let currentToolId = null;
-        let selectedFiles = [];
-
-        // UI Generation
-        const grid = document.getElementById('tools-grid');
-        toolsList.forEach(t => {
-            const div = document.createElement('div');
-            div.className = 'tool-card';
-            div.innerHTML = `<span class="tool-icon">${t.icon}</span><strong>${t.title}</strong><p style="font-size:12px; color:#666;">${t.desc}</p>`;
-            div.onclick = () => openModal(t);
-            grid.appendChild(div);
-        });
-
-        function openModal(tool) {
-            currentToolId = tool.id;
-            selectedFiles = [];
-            document.getElementById('m-title').innerText = tool.title;
-            document.getElementById('m-desc').innerText = tool.desc;
-            document.getElementById('f-input').multiple = tool.multi;
-            document.getElementById('f-input').value = '';
-            document.getElementById('file-info').innerText = '';
-            document.getElementById('go-btn').disabled = true;
-            document.getElementById('options').style.display = 'none';
-            document.getElementById('modal').style.display = 'flex';
-            
-            // Show options based on tool
-            const opt = document.getElementById('options');
-            opt.innerHTML = '';
-            if(tool.id === 'split' || tool.id === 'remove') {
-                opt.style.display = 'block';
-                opt.innerHTML = 'Pages (e.g. 1, 2-5): <input type="text" id="arg1" value="1">';
-            } else if(tool.id === 'watermark') {
-                opt.style.display = 'block';
-                opt.innerHTML = 'Watermark Text: <input type="text" id="arg1" value="DRAFT">';
-            } else if(tool.id === 'rotate') {
-                opt.style.display = 'block';
-                opt.innerHTML = 'Degrees: <select id="arg1"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select>';
-            }
-        }
-
-        function closeModal() { document.getElementById('modal').style.display = 'none'; }
-
-        document.getElementById('f-input').onchange = (e) => {
-            selectedFiles = Array.from(e.target.files);
-            document.getElementById('file-info').innerText = `${selectedFiles.length} file(s) selected`;
-            document.getElementById('go-btn').disabled = false;
-        };
-
-        // CORE PROCESSING ENGINE
-        document.getElementById('go-btn').onclick = async () => {
-            const loader = document.getElementById('loader');
-            const btn = document.getElementById('go-btn');
-            loader.style.display = 'block';
-            btn.disabled = true;
-
-            try {
-                await processTool(currentToolId);
-            } catch (err) {
-                alert("Error: " + err.message);
-            } finally {
-                loader.style.display = 'none';
-                btn.disabled = false;
-            }
-        };
-
-        async function processTool(id) {
-            const arg1 = document.getElementById('arg1')?.value;
-            
-            // Handle Merge
-            if(id === 'merge') {
-                const mergedPdf = await PDFDocument.create();
-                for(let f of selectedFiles) {
-                    const pdf = await PDFDocument.load(await f.arrayBuffer());
-                    const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                    pages.forEach(p => mergedPdf.addPage(p));
-                }
-                download(await mergedPdf.save(), "merged.pdf");
-            } 
-            
-            // Handle Split / Remove
-            else if (id === 'split' || id === 'remove') {
-                const pdf = await PDFDocument.load(await selectedFiles[0].arrayBuffer());
-                const resultPdf = await PDFDocument.create();
-                const pages = await resultPdf.copyPages(pdf, [parseInt(arg1)-1]);
-                pages.forEach(p => resultPdf.addPage(p));
-                download(await resultPdf.save(), "processed.pdf");
-            }
-
-            // Handle Watermark
-            else if (id === 'watermark') {
-                const pdf = await PDFDocument.load(await selectedFiles[0].arrayBuffer());
-                const font = await pdf.embedFont(StandardFonts.Helvetica);
-                pdf.getPages().forEach(p => {
-                    p.drawText(arg1, { x: 50, y: 50, size: 50, font, color: rgb(0.9, 0, 0), opacity: 0.3 });
-                });
-                download(await pdf.save(), "watermarked.pdf");
-            }
-
-            // Handle Rotate
-            else if (id === 'rotate') {
-                const pdf = await PDFDocument.load(await selectedFiles[0].arrayBuffer());
-                const deg = parseInt(arg1);
-                pdf.getPages().forEach(p => p.setRotation(degrees(deg)));
-                download(await pdf.save(), "rotated.pdf");
-            }
-
-            // Fallback for all other tools (Simplified logic to prevent "is not a function" error)
-            else {
-                const pdf = await PDFDocument.load(await selectedFiles[0].arrayBuffer());
-                // Basic "Repair/Re-save" as default behavior for placeholders
-                download(await pdf.save(), "output.pdf");
-                alert("Tool simulation complete! Advanced logic for " + id + " is running in standard mode.");
-            }
-        }
-
-        function download(bytes, name) {
-            const blob = new Blob([bytes], { type: "application/pdf" });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = name;
-            link.click();
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
