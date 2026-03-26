@@ -1,120 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Code Studio - EMI FIXED</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f0f23 0%,#1a1a2e 100%);color:#e2e8f0;height:100vh;overflow:hidden;}
-        .app{display:flex;height:100vh;width:100vw;}
-        .sidebar{width:440px;min-width:440px;background:rgba(26,26,46,0.98);backdrop-filter:blur(25px);border-right:1px solid rgba(99,102,241,0.3);display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,0.4);}
-        .header{padding:30px 30px 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-        .logo{display:flex;align-items:center;gap:15px;}
-        .logo-icon{width:50px;height:50px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;color:#fff;}
-        .logo h2{font-size:22px;font-weight:700;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-        .mode-btn{padding:12px 24px;border:none;border-radius:25px;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.3s ease;}
-        .demo{background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 20px rgba(16,185,129,0.3);}
-        .live{background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 20px rgba(245,158,11,0.3);}
-        .history-section{flex:1;padding:0 30px;overflow-y:auto;}
-        .section-title{padding:20px 0 15px;font-weight:600;font-size:16px;color:#94a3b8;border-bottom:1px solid rgba(255,255,255,0.1);}
-        .clear-all{background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3);padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;}
-        .history-list{display:flex;flex-direction:column;gap:12px;padding:10px 0;}
-        .history-item{padding:18px 22px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;cursor:pointer;transition:all 0.3s ease;font-size:15px;line-height:1.5;}
-        .history-item:hover{background:rgba(99,102,241,0.15);border-color:rgba(99,102,241,0.4);transform:translateX(6px);}
-        .prompt-area{padding:0 30px 30px;border-top:1px solid rgba(255,255,255,0.08);}
-        #prompt{width:100%;min-height:130px;background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.12);border-radius:20px;padding:24px;font-size:16px;color:#e2e8f0;font-family:inherit;resize:vertical;transition:all 0.3s ease;backdrop-filter:blur(20px);}
-        #prompt:focus{outline:none;border-color:#6366f1;background:rgba(255,255,255,0.08);box-shadow:0 0 0 3px rgba(99,102,241,0.2);}
-        .generate-btn{width:100%;height:64px;background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#a855f7 100%);border:none;border-radius:20px;color:#fff;font-size:18px;font-weight:700;cursor:pointer;margin-top:20px;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);position:relative;overflow:hidden;font-family:inherit;}
-        .generate-btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 20px 40px rgba(99,102,241,0.4);}
-        .generate-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-        .generate-btn span{margin-right:12px;}
-        .status-bar{padding:20px 30px;background:rgba(255,255,255,0.02);border-top:1px solid rgba(255,255,255,0.08);font-size:15px;color:#94a3b8;text-align:center;font-weight:500;}
-        .preview{flex:1;position:relative;background:#000;}
-        .preview-header{padding:32px;background:rgba(17,24,39,0.98);border-bottom:1px solid rgba(55,65,81,0.8);display:flex;justify-content:space-between;align-items:center;}
-        .preview-header h3{font-size:22px;font-weight:700;color:#f1f5f9;}
-        .download-btn{display:flex;align-items:center;gap:10px;padding:14px 28px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:16px;color:#fff;font-weight:600;font-size:15px;cursor:pointer;transition:all 0.3s ease;}
-        .download-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(16,185,129,0.4);}
-        .loader{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:100;color:#e2e8f0;backdrop-filter:blur(20px);}
-        .loader.active{display:flex;}
-        .spinner{width:60px;height:60px;border:4px solid rgba(99,102,241,0.2);border-top:4px solid #6366f1;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:24px;}
-        @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-        #frame{width:100%;height:calc(100vh - 90px);border:none;background:#fff;}
-        @media (max-width:1100px){.sidebar{width:100%;min-width:0;height:50vh;max-height:50vh;}.preview{height:50vh;}#frame{height:100%;}.header{padding:24px;}}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Builder</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app">
-        <div class="sidebar">
-            <div class="header">
-                <div class="logo">
-                    <div class="logo-icon">⚡</div>
-                    <h2>AI Code Studio</h2>
-                </div>
-                <button id="mode" class="mode-btn demo">Demo Mode</button>
-            </div>
-            
-            <div class="history-section">
-                <div class="section-title">
-                    Recent Creations
-                    <button id="clear" class="clear-all">Clear All</button>
-                </div>
-                <div id="list" class="history-list"></div>
-            </div>
-            
-            <div class="prompt-area">
-                <textarea id="prompt" placeholder="Type: 'create emi calculator', 'portfolio site', 'todo app', 'calculator'..."></textarea>
-                <button id="gen" class="generate-btn">
-                    <span>✨ Generate Code</span>
-                </button>
-            </div>
-            
-            <div id="status" class="status-bar">Ready! Try "create emi calculator" ✨</div>
-        </div>
-        
-        <div class="preview">
-            <div class="preview-header">
-                <h3>Live Preview</h3>
-                <button id="save" class="download-btn">
-                    💾 Save HTML
-                </button>
-            </div>
-            <div id="loading" class="loader">
-                <div class="spinner"></div>
-                <div>Building your EMI Calculator...</div>
-            </div>
-            <iframe id="preview"></iframe>
-        </div>
+
+<div class="app">
+
+  <div class="left">
+    <h2>⚡ AI Builder</h2>
+
+    <div id="chat"></div>
+
+    <textarea id="prompt" placeholder="Create a portfolio website..."></textarea>
+    <button onclick="generate()">Generate</button>
+
+    <h3>History</h3>
+    <ul id="history"></ul>
+  </div>
+
+  <div class="right">
+    <div class="top">
+      Live Preview
+      <span id="loading" class="hidden">⏳</span>
     </div>
-    <script>
-        class App{
-            constructor(){
-                this.demo=true;
-                this.history=JSON.parse(localStorage.getItem('aistudio')||'[]');
-                this.code='';
-                this.templates={
-                    emi:`<!DOCTYPE html><html><head><title>EMI Calculator</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:2rem;display:flex;align-items:center;justify-content:center;color:#333;}.calc{max-width:500px;width:100%;background:#fff;border-radius:24px;padding:40px;box-shadow:0 25px 50px rgba(0,0,0,0.2);}.title{text-align:center;margin-bottom:30px;font-size:2rem;font-weight:700;color:#333;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}.input-group{margin-bottom:20px;}.input-group label{display:block;margin-bottom:8px;font-weight:600;color:#555;}.input-group input{width:100%;padding:16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;transition:all 0.3s ease;font-family:inherit;}.input-group input:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}.btn{width:100%;padding:18px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer;transition:all 0.3s ease;font-family:inherit;}.btn:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(102,126,234,0.4);}.result{margin-top:30px;padding:24px;background:linear-gradient(135deg,#f8fafc,#e2e8f0);border-radius:16px;text-align:center;border-left:5px solid #667eea;}.result h3{margin-bottom:15px;font-size:1.4rem;color:#333;}.result-value{font-size:2.5rem;font-weight:800;color:#667eea;margin-bottom:10px;}.info{margin-top:20px;font-size:14px;color:#666;line-height:1.6;}</style></head><body><div class="calc"><h2 class="title">💰 EMI Calculator</h2><div class="input-group"><label>Loan Amount (₹)</label><input type="number" id="principal" value="500000" min="1000"></div><div class="input-group"><label>Interest Rate (% per year)</label><input type="number" id="rate" value="8.5" step="0.1" min="0.1"></div><div class="input-group"><label>Loan Tenure (Years)</label><input type="number" id="years" value="5" min="1" max="30"></div><button class="btn" onclick="calculateEMI()">Calculate EMI</button><div id="result" class="result" style="display:none;"><h3>Your EMI</h3><div id="emi-value" class="result-value">--</div><div id="total" class="info">Total Interest: <span id="interest">--</span></div><div id="summary" class="info">Total Payment: <span id="total-pay">--</span></div></div></div><script>function calculateEMI(){const p=parseFloat(document.getElementById('principal').value),r=parseFloat(document.getElementById('rate').value)/12/100,n=parseFloat(document.getElementById('years').value)*12;if(p<=0||r<=0||n<=0){alert('Please enter valid values');return;}const emi=(p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1),totalPay=emi*n,totalInterest=totalPay-p;document.getElementById('emi-value').textContent='₹'+emi.toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:0});document.getElementById('interest').textContent='₹'+totalInterest.toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:0});document.getElementById('total-pay').textContent='₹'+totalPay.toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:0});document.getElementById('result').style.display='block';document.getElementById('result').scrollIntoView({behavior:'smooth'});}</script></body></html>`,
-                    portfolio:`[PREVIOUS PORTFOLIO CODE]`,
-                    calculator:`[PREVIOUS CALCULATOR CODE]`,
-                    todo:`[PREVIOUS TODO CODE]`
-                };
-                this.init();
-            }
-            init(){this.e={prompt:document.getElementById('prompt'),gen:document.getElementById('gen'),preview:document.getElementById('preview'),list:document.getElementById('list'),loading:document.getElementById('loading'),mode:document.getElementById('mode'),save:document.getElementById('save'),status:document.getElementById('status'),clear:document.getElementById('clear')};this.bind();this.load();this.status.textContent='EMI Calculator template loaded! Try it now ✨';}
-            bind(){this.e.gen.onclick=()=>this.run();this.e.mode.onclick=()=>this.modeSwitch();this.e.clear.onclick=()=>this.clearHist();this.e.save.onclick=()=>this.saveFile();this.e.prompt.onkeydown=e=>{if(e.ctrlKey&&e.key==='Enter')this.run();};}
-            modeSwitch(){this.demo=!this.demo;this.e.mode.textContent=this.demo?'Demo Mode':'Live API';this.e.mode.className='mode-btn '+(this.demo?'demo':'live');this.status.textContent=this.demo?'Demo: Instant EMI calc generated ✨':'Live: Ready for API';}
-            async run(){const p=this.e.prompt.value.trim();if(!p){this.status.textContent='Enter a prompt first 😊';return;}this.start();let c;if(p.toLowerCase().includes('emi'))c=this.templates.emi;else if(p.toLowerCase().includes('port'))c=this.templates.portfolio;else if(p.toLowerCase().includes('calc')&&!p.toLowerCase().includes('emi'))c=this.templates.calculator;else c=this.templates.todo;this.code=c;this.saveHist(p,c);this.update();this.stop();this.status.textContent='"'+p.slice(0,25)+'" generated perfectly! 🎉';this.e.prompt.value='';}
-            start(){this.e.gen.disabled=true;this.e.gen.innerHTML='<span>🔄 Generating...</span>';this.e.loading.classList.add('active');}
-            stop(){this.e.gen.disabled=false;this.e.gen.innerHTML='<span>✨ Generate Code</span>';this.e.loading.classList.remove('active');}
-            update(){try{const d=this.e.preview.contentDocument||this.e.preview.contentWindow.document;d.open();d.write(this.code||this.placeholder());d.close();}catch(e){console.log(e);}}
-            placeholder(){return'<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;font-family:Inter;text-align:center;padding:3rem;"><h1 style="font-size:clamp(3rem,12vw,6rem);margin-bottom:2rem;">✨ AI Studio</h1><p style="max-width:30rem;font-size:1.3rem;opacity:.95;">Type "create emi calculator" and watch magic happen!</p></div>';}
-            saveHist(p,c){this.history.unshift({p,c,t:Date.now()});this.history=this.history.slice(0,15);localStorage.setItem('aistudio',JSON.stringify(this.history));this.load();}
-            load(){this.e.list.innerHTML='';this.history.slice(0,10).forEach((h,i)=>{const el=document.createElement('div');el.className='history-item';el.textContent=h.p.slice(0,50)+(h.p.length>50?'...':'');el.onclick=()=>{this.e.prompt.value=h.p;this.code=h.c;this.update();};this.e.list.appendChild(el);});}
-            clearHist(){this.history=[];localStorage.removeItem('aistudio');this.e.list.innerHTML='';this.status.textContent='History cleared 🧹';}
-            saveFile(){if(!this.code){this.status.textContent='Nothing to save';return;}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([this.code],{type:'text/html'}));a.download='emi-calculator.html';a.click();}
-        }
-        new App();
-    </script>
+    <iframe id="frame"></iframe>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
 </body>
-</html>
+</html> 
