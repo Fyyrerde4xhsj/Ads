@@ -1,160 +1,76 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
 body {
-  background: #0d1117;
-  color: #fff;
+  margin:0;
+  background:#0d1117;
+  color:#fff;
+  font-family:Arial;
 }
 
 .app {
-  display: flex;
-  height: 100vh;
+  display:flex;
+  height:100vh;
 }
 
-/* LEFT PANEL */
-.left-panel {
-  width: 35%;
-  background: #161b22;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #30363d;
+.left {
+  width:35%;
+  padding:10px;
+  background:#161b22;
+  display:flex;
+  flex-direction:column;
 }
 
-.header {
-  padding: 15px;
-  font-size: 20px;
-  font-weight: bold;
-  border-bottom: 1px solid #30363d;
-}
-
-.chat {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-}
-
-.message {
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.user {
-  background: #238636;
-  align-self: flex-end;
-}
-
-.ai {
-  background: #30363d;
-}
-
-.input-area {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  border-top: 1px solid #30363d;
+#chat {
+  flex:1;
+  overflow:auto;
 }
 
 textarea {
-  resize: none;
-  height: 60px;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 10px;
-  background: #0d1117;
-  color: #fff;
+  height:70px;
+  margin:10px 0;
+  background:#0d1117;
+  color:#fff;
+  border:none;
+  padding:10px;
+  border-radius:8px;
 }
 
 button {
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #238636;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
+  padding:10px;
+  background:#238636;
+  border:none;
+  border-radius:8px;
+  color:white;
+  cursor:pointer;
 }
 
 button:hover {
-  background: #2ea043;
+  background:#2ea043;
 }
 
-.history {
-  border-top: 1px solid #30363d;
-  padding: 10px;
-  max-height: 150px;
-  overflow-y: auto;
+.right {
+  flex:1;
+  display:flex;
+  flex-direction:column;
 }
 
-.history h3 {
-  margin-bottom: 5px;
-}
-
-.history li {
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 5px;
-}
-
-.history li:hover {
-  background: #30363d;
-}
-
-/* RIGHT PANEL */
-.right-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.preview-header {
-  padding: 10px;
-  border-bottom: 1px solid #30363d;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.top {
+  padding:10px;
+  border-bottom:1px solid #333;
 }
 
 iframe {
-  flex: 1;
-  width: 100%;
-  border: none;
-  background: white;
+  flex:1;
+  border:none;
+  background:white;
 }
 
-/* LOADER */
-.loader {
-  width: 20px;
-  height: 20px;
-  border: 3px solid #999;
-  border-top: 3px solid #fff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.hidden { display:none; }
+
+li {
+  cursor:pointer;
+  margin:5px 0;
 }
 
-.hidden {
-  display: none;
-}
-
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
-
-/* MOBILE */
-@media(max-width: 768px) {
-  .app {
-    flex-direction: column;
-  }
-  .left-panel {
-    width: 100%;
-    height: 50%;
-  }
-  .right-panel {
-    height: 50%;
-  }
+@media(max-width:768px){
+  .app { flex-direction:column; }
+  .left { width:100%; height:50%; }
 }

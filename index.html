@@ -1,41 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Code Builder</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Builder</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="app">
-  <!-- LEFT PANEL -->
-  <div class="left-panel">
-    
-    <div class="header">⚡ AI Code Builder</div>
 
-    <div class="chat" id="chat"></div>
+  <div class="left">
+    <h2>⚡ AI Builder</h2>
 
-    <div class="input-area">
-      <textarea id="prompt" placeholder="Create a modern portfolio website..."></textarea>
-      <button id="generate">Generate</button>
-    </div>
+    <div id="chat"></div>
 
-    <div class="history">
-      <h3>History</h3>
-      <ul id="historyList"></ul>
-    </div>
+    <textarea id="prompt" placeholder="Create a modern landing page..."></textarea>
+    <button onclick="generate()">Generate</button>
 
+    <h3>History</h3>
+    <ul id="history"></ul>
   </div>
 
-  <!-- RIGHT PANEL -->
-  <div class="right-panel">
-    <div class="preview-header">
+  <div class="right">
+    <div class="top">
       Live Preview
-      <div id="loader" class="loader hidden"></div>
+      <span id="loading" class="hidden">⏳</span>
     </div>
-    <iframe id="preview"></iframe>
+    <iframe id="frame"></iframe>
   </div>
+
 </div>
 
 <script src="app.js"></script>
